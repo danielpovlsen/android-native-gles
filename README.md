@@ -71,7 +71,7 @@ To filter out log messages not belonging to the app at hand use -s \<tag\> like 
 	adb -s <deviceid> shell logcat -s Angles
 
 ## TODO
-* If possible, hide or dim "software buttons" (correct name?) on tablets
+* If possible, hide or dim the system bar (home, back button etc.) on tablets
 * Up the quality of the code
 	* Make sure there are no leaks or other defects
 	* Clean up the syntax / code convention
