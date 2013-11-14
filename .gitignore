@@ -10,3 +10,6 @@ build.xml
 Tegra-Android/
 *.sdf
 *.opensdf
+
+# OS X
+.DS_Store
