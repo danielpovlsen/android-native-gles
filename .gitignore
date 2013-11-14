@@ -1,0 +1,12 @@
+bin/
+obj/
+libs/
+local.properties
+proguard-project.txt
+project.properties
+build.xml
+
+# Visual Studio / TADP files
+Tegra-Android/
+*.sdf
+*.opensdf
