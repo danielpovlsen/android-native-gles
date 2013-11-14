@@ -23,9 +23,13 @@ OS X Mavericks no longer provides Apache Ant and you must download and install i
 
 ## Building
 
-First, from the command line in the project root, create the build files using `android update project`. We are setting the build SDK version to 18 and giving our project the name Angles.
+First, from the command line in the project root, create the build files using `android update project`. We are setting the build SDK version to 10 and giving our project the name Angles.
 
-	android update project --path . --target android-18 --name Angles
+	android update project --path . --target android-10 --name Angles
+	
+To find out which SDK target versions are installed use
+
+	android list targets
 
 Next, compile the native code
 
