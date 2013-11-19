@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="jni\main.cpp">
+      <Filter>jni</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ANDROID_NDK_ROOT)\sources\android\native_app_glue\android_native_app_glue.c">
+      <Filter>NDK files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="jni\Android.mk">
+      <Filter>jni</Filter>
+    </None>
+    <None Include="jni\Application.mk">
+      <Filter>jni</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="jni">
+      <UniqueIdentifier>{e46f44cd-7e51-4c7c-b9bf-7d84f4ad9f78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{b861c089-d80f-4f66-b32f-3f0234a6637d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-hdpi">
+      <UniqueIdentifier>{d26902aa-1616-4ec5-8a3c-b7597cc93eae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-mdpi">
+      <UniqueIdentifier>{3358b200-0efe-40c4-9576-1ac140941075}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-xhdpi">
+      <UniqueIdentifier>{958fc423-ec3f-4dd1-940e-4b6f86ce85d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\drawable-xxhdpi">
+      <UniqueIdentifier>{01c726d9-a2f4-4576-ab89-2b54f991a87f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NDK files">
+      <UniqueIdentifier>{d52180bb-61e8-4c72-a82e-fe27734d68d4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="AndroidManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\drawable-hdpi\icon.png">
+      <Filter>res\drawable-hdpi</Filter>
+    </Image>
+    <Image Include="res\drawable-mdpi\icon.png">
+      <Filter>res\drawable-mdpi</Filter>
+    </Image>
+    <Image Include="res\drawable-xhdpi\icon.png">
+      <Filter>res\drawable-xhdpi</Filter>
+    </Image>
+    <Image Include="res\drawable-xxhdpi\icon.png">
+      <Filter>res\drawable-xxhdpi</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

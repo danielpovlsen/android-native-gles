@@ -15,8 +15,13 @@ aka Angles
 * Samsung Galaxy S4 (4.2.2)
 
 ## Prerequisites
-* Install the Android [SDK](http://developer.android.com/sdk/index.html) and [NDK](http://developer.android.com/tools/sdk/ndk/index.html)
-* Setup environment variables and paths as instructed above (or insert instructions here, if necessary)
+* For building, running and debugging from the command line
+	* Install the Android [SDK](http://developer.android.com/sdk/index.html) and [NDK](http://developer.android.com/tools/sdk/ndk/index.html)
+	* Setup environment variables and paths as instructed above (or insert instructions here, if necessary)
+* For building, running and debugging using Visual Studio 2012
+	* Use a Tegra device for development
+	* Sign up for the [Tegra Registered Developer Program](https://developer.nvidia.com/tegra-registered-developer-program)
+	* Download and install the latest [Tegra Android Development Pack](https://developer.nvidia.com/tegra-android-development-pack) (TADP)
 
 ### OS X Mavericks
 OS X Mavericks no longer provides Apache Ant and you must download and install it manually from [here](http://ant.apache.org/).
@@ -76,4 +81,3 @@ To filter out log messages not belonging to the app at hand use -s \<tag\> like 
 	* Make sure there are no leaks or other defects
 	* Clean up the syntax / code convention
 * Up the quality of this README
-* Add support for Nvidia's Tegra Android Development Pack
