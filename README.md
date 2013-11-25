@@ -8,11 +8,15 @@ aka Angles
 
 ### Tested On
 * Samsung Nexus S (4.1.2)
-* Amazon Kindle Fire (~2.3)
-* Asus Eee Pad Transformer Prime TF201 (4.1.1)
-* Nvidia Shield (4.2.1)
 * Samsung Galaxy Nexus (4.3)
 * Samsung Galaxy S4 (4.2.2)
+* LG Nexus 5 (4.4)
+* Amazon Kindle Fire 1st Gen. (~2.3)
+* Amazon Kindle Fire HD 3rd Gen. (~4.2.2)
+* Amazon Kindle Fire HDX (~4.2.2)
+* Amazon Kindle Fire HDX 8.9" (~4.2.2)
+* Asus Eee Pad Transformer Prime TF201 (4.1.1)
+* Nvidia Shield (4.2.1)
 
 ## Prerequisites
 * For building, running and debugging from the command line
