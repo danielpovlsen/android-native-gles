@@ -360,6 +360,7 @@ void* renderThread(void* arg) {
 		if (currentContext != appState->renderContext) {
 			if (eglMakeCurrent(appState->display, appState->surface, appState->surface, appState->renderContext) == EGL_FALSE) {
 				LOGE("eglMakeCurrent() failed with error 0x%04x", eglGetError());
+			} else {
 				currentContext = appState->renderContext;
 			}
 		}
