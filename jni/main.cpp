@@ -5,6 +5,8 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
+#include <pthread.h>
+
 #define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, "Angles", __VA_ARGS__))
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "Angles", __VA_ARGS__))
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "Angles", __VA_ARGS__))
@@ -42,17 +44,15 @@ struct GLObjects {
 
 struct AppState {
 	android_app* app;
-	bool windowInitialized;
-	bool resumed;
-	bool focused;
-	bool running;
 	EGLDisplay display;
 	EGLSurface surface;
 	EGLContext context;
+	EGLContext renderContext;
 	int32_t width;
 	int32_t height;
 	SavedState savedState;
 	GLObjects glObjects;
+	pthread_mutex_t gpuOwnership;
 };
 
 GLuint compileShader(GLenum type, const char* source) {
@@ -156,13 +156,20 @@ bool initDisplay(AppState* appState) {
 		return false;
 	}
 
-	if (eglMakeCurrent(display, surface, surface, context) == EGL_FALSE) {
+	EGLContext renderContext = eglCreateContext(display, config, context, contextAttribs);
+	if (renderContext == EGL_NO_CONTEXT) {
+		LOGE("eglCreateContext failed with error 0x%04x", eglGetError());
+		return false;
+	}
+
+	if (eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, context) == EGL_FALSE) {
 		LOGE("eglMakeCurrent failed with error 0x%04x", eglGetError());
 		return false;
 	}
 
 	appState->display = display;
 	appState->context = context;
+	appState->renderContext = renderContext;
 	appState->surface = surface;
 
 	printGLString("Version", GL_VERSION);
@@ -249,6 +256,9 @@ void termDisplay(AppState* appState) {
 		if (appState->context != EGL_NO_CONTEXT) {
 			eglDestroyContext(appState->display, appState->context);
 		}
+		if (appState->renderContext != EGL_NO_CONTEXT) {
+			eglDestroyContext(appState->display, appState->renderContext);
+		}
 		if (appState->surface != EGL_NO_SURFACE) {
 			eglDestroySurface(appState->display, appState->surface);
 		}
@@ -256,6 +266,7 @@ void termDisplay(AppState* appState) {
 	}
 	appState->display = EGL_NO_DISPLAY;
 	appState->context = EGL_NO_CONTEXT;
+	appState->renderContext = EGL_NO_CONTEXT;
 	appState->surface = EGL_NO_SURFACE;
 }
 
@@ -288,11 +299,11 @@ static void onAppCmd(android_app* app, int32_t cmd) {
 		break;
 	case APP_CMD_RESUME:
 		LOGI("APP_CMD_RESUME");
-		appState->resumed = true;
+		pthread_mutex_unlock(&appState->gpuOwnership);
 		break;
 	case APP_CMD_PAUSE:
 		LOGI("APP_CMD_PAUSE");
-		appState->resumed = false;
+		pthread_mutex_lock(&appState->gpuOwnership);
 		break;
 	case APP_CMD_STOP:
 		LOGI("APP_CMD_STOP");
@@ -302,25 +313,25 @@ static void onAppCmd(android_app* app, int32_t cmd) {
 		break;
 	case APP_CMD_GAINED_FOCUS:
 		LOGI("APP_CMD_GAINED_FOCUS");
-		appState->focused = true;
+		pthread_mutex_unlock(&appState->gpuOwnership);
 		break;
 	case APP_CMD_LOST_FOCUS:
 		LOGI("APP_CMD_LOST_FOCUS");
-		appState->focused = false;
+		pthread_mutex_lock(&appState->gpuOwnership);
 		break;
 	case APP_CMD_INIT_WINDOW:
 		LOGI("APP_CMD_INIT_WINDOW");
 		if (appState->app->window != NULL) {
 			initDisplay(appState);
 		}
-		appState->windowInitialized = true;
+		pthread_mutex_unlock(&appState->gpuOwnership);
 		break;
 	case APP_CMD_WINDOW_RESIZED:
 		LOGI("APP_CMD_WINDOW_RESIZED");
 		break;
 	case APP_CMD_TERM_WINDOW:
 		LOGI("APP_CMD_TERM_WINDOW");
-		appState->windowInitialized = false;
+		pthread_mutex_lock(&appState->gpuOwnership);
 		termDisplay(appState);
 		break;
 
@@ -336,7 +347,26 @@ static void onAppCmd(android_app* app, int32_t cmd) {
 	default:
 		LOGI("Unknown CMD: %d", cmd);
 	}
-	appState->running = (appState->resumed && appState->windowInitialized && appState->focused);
+}
+
+void* renderThread(void* arg) {
+	LOGI("--- RENDER THREAD STARTED ---");
+	android_app* app = static_cast<android_app*>(arg);
+	AppState* appState = static_cast<AppState*>(app->userData);
+	EGLContext renderContext = NULL;
+
+	while(true) {
+		pthread_mutex_lock(&appState->gpuOwnership);
+		if (renderContext != appState->renderContext) {
+			if (eglMakeCurrent(appState->display, appState->surface, appState->surface, appState->renderContext) == EGL_FALSE) {
+				LOGE("eglMakeCurrent() failed with error 0x%04x", eglGetError());
+				renderContext = appState->renderContext;
+			}
+		}
+		drawFrame(appState);
+		pthread_mutex_unlock(&appState->gpuOwnership);
+		sched_yield();
+	}
 }
 
 void android_main(android_app* app) {
@@ -356,13 +386,26 @@ void android_main(android_app* app) {
 		appState.savedState = *static_cast<SavedState*>(app->savedState);
 	}
 
+	pthread_mutexattr_t mutexattr;
+	pthread_mutexattr_init(&mutexattr);
+	pthread_mutexattr_settype(&mutexattr, PTHREAD_MUTEX_RECURSIVE);
+	pthread_mutex_init(&appState.gpuOwnership, &mutexattr);
+
+	// Lock once for each of the events will lock / unlock the gpu
+	for (int i = 0 ; i < 3; ++i) {
+		pthread_mutex_lock(&appState.gpuOwnership);
+	}
+
+	pthread_t rt;
+	pthread_create(&rt, NULL, renderThread, app);
+
 	while (true) {
 		int ident;
 		int fd;
 		int events;
 		android_poll_source* source;
 
-		while((ident = ALooper_pollAll(appState.running ? 0 : -1, &fd, &events, reinterpret_cast<void**>(&source))) >= 0) {
+		while((ident = ALooper_pollAll(-1, &fd, &events, reinterpret_cast<void**>(&source))) >= 0) {
 			// process this event
 			if (source) {
 				source->process(app, source);
@@ -372,10 +415,6 @@ void android_main(android_app* app) {
 				termDisplay(&appState);
 				return;
 			}
-		}
-
-		if (appState.running) {
-			drawFrame(&appState);
 		}
 	}
 }
