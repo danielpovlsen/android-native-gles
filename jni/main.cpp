@@ -353,14 +353,14 @@ void* renderThread(void* arg) {
 	LOGI("--- RENDER THREAD STARTED ---");
 	android_app* app = static_cast<android_app*>(arg);
 	AppState* appState = static_cast<AppState*>(app->userData);
-	EGLContext renderContext = NULL;
+	EGLContext currentContext = NULL;
 
 	while(true) {
 		pthread_mutex_lock(&appState->gpuOwnership);
-		if (renderContext != appState->renderContext) {
+		if (currentContext != appState->renderContext) {
 			if (eglMakeCurrent(appState->display, appState->surface, appState->surface, appState->renderContext) == EGL_FALSE) {
 				LOGE("eglMakeCurrent() failed with error 0x%04x", eglGetError());
-				renderContext = appState->renderContext;
+				currentContext = appState->renderContext;
 			}
 		}
 		drawFrame(appState);
