@@ -149,14 +149,15 @@ bool initDisplay(AppState* appState) {
 		EGL_CONTEXT_CLIENT_VERSION, 2,
 		EGL_NONE
 	};
-	EGLContext context = eglCreateContext(display, config, NULL, contextAttribs);
+
+	EGLContext context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
 	if (context == EGL_NO_CONTEXT) {
-		LOGE("eglCreateContext failed");
+		LOGE("eglCreateContext failed with error 0x%04x", eglGetError());
 		return false;
 	}
 
 	if (eglMakeCurrent(display, surface, surface, context) == EGL_FALSE) {
-		LOGW("Unable to eglMakeCurrent");
+		LOGE("eglMakeCurrent failed with error 0x%04x", eglGetError());
 		return false;
 	}
 
