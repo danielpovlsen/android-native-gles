@@ -4,8 +4,8 @@
     <ClCompile Include="jni\main.cpp">
       <Filter>jni</Filter>
     </ClCompile>
-    <ClCompile Include="$(ANDROID_NDK_ROOT)\sources\android\native_app_glue\android_native_app_glue.c">
-      <Filter>NDK files</Filter>
+    <ClCompile Include="jni\android_native_app_glue.c">
+      <Filter>jni</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -35,9 +35,6 @@
     <Filter Include="res\drawable-xxhdpi">
       <UniqueIdentifier>{01c726d9-a2f4-4576-ab89-2b54f991a87f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="NDK files">
-      <UniqueIdentifier>{d52180bb-61e8-4c72-a82e-fe27734d68d4}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="AndroidManifest.xml" />
@@ -55,5 +52,10 @@
     <Image Include="res\drawable-xxhdpi\icon.png">
       <Filter>res\drawable-xxhdpi</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="jni\android_native_app_glue.h">
+      <Filter>jni</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

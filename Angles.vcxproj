@@ -35,17 +35,11 @@
     <Link>
       <AdditionalDependencies>android;GLESv2;EGL</AdditionalDependencies>
     </Link>
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(ANDROID_NDK_ROOT)\sources\android\native_app_glue</AdditionalIncludeDirectories>
-    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Tegra-Android'">
     <Link>
       <AdditionalDependencies>android;GLESv2;EGL</AdditionalDependencies>
     </Link>
-    <ClCompile>
-      <AdditionalIncludeDirectories>$(ANDROID_NDK_ROOT)\sources\android\native_app_glue</AdditionalIncludeDirectories>
-    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="AndroidManifest.xml" />
@@ -53,7 +47,7 @@
     <None Include="jni\Application.mk" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(ANDROID_NDK_ROOT)\sources\android\native_app_glue\android_native_app_glue.c" />
+    <ClCompile Include="jni\android_native_app_glue.c" />
     <ClCompile Include="jni\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +55,9 @@
     <Image Include="res\drawable-mdpi\icon.png" />
     <Image Include="res\drawable-xhdpi\icon.png" />
     <Image Include="res\drawable-xxhdpi\icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="jni\android_native_app_glue.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
