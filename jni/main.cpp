@@ -6,6 +6,7 @@
 #include <GLES2/gl2ext.h>
 
 #include <pthread.h>
+#include <assert.h>
 
 #define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, "Angles", __VA_ARGS__))
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "Angles", __VA_ARGS__))
@@ -349,21 +350,26 @@ static void onAppCmd(android_app* app, int32_t cmd) {
 	}
 }
 
+void updateCurrentContextIfNecessary(AppState* appState) {
+	assert(appState->renderContext != NULL);
+
+	if (appState->renderContext == eglGetCurrentContext()) {
+		return;
+	}
+
+	if (eglMakeCurrent(appState->display, appState->surface, appState->surface, appState->renderContext) == EGL_FALSE) {
+		LOGE("Render Thread: eglMakeCurrent() failed with error 0x%04x", eglGetError());
+	}
+}
+
 void* renderThread(void* arg) {
 	LOGI("--- RENDER THREAD STARTED ---");
 	android_app* app = static_cast<android_app*>(arg);
 	AppState* appState = static_cast<AppState*>(app->userData);
-	EGLContext currentContext = NULL;
 
 	while(true) {
 		pthread_mutex_lock(&appState->gpuOwnership);
-		if (currentContext != appState->renderContext) {
-			if (eglMakeCurrent(appState->display, appState->surface, appState->surface, appState->renderContext) == EGL_FALSE) {
-				LOGE("eglMakeCurrent() failed with error 0x%04x", eglGetError());
-			} else {
-				currentContext = appState->renderContext;
-			}
-		}
+		updateCurrentContextIfNecessary(appState);
 		drawFrame(appState);
 		pthread_mutex_unlock(&appState->gpuOwnership);
 		sched_yield();
