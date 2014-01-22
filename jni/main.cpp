@@ -69,7 +69,7 @@ GLuint compileShader(GLenum type, const char* source) {
 				char* infoLog = new char[infoLogLength];
 				if (infoLog) {
 					glGetShaderInfoLog(shader, infoLogLength, NULL, infoLog);
-					LOGE("Could not compile shader %d:\n%s\n", type, infoLog);
+					LOGE("Could not compile shader %d:\n%s", type, infoLog);
 					delete[] infoLog;
 				}
 				glDeleteShader(shader);
@@ -105,7 +105,7 @@ GLuint createProgram(const char* vertexSource, const char* fragmentSource) {
 				char* infoLog = new char[infoLogLength];
 				if (infoLog) {
 					glGetProgramInfoLog(program, infoLogLength, NULL, infoLog);
-					LOGE("Could not link program:\n%s\n", infoLog);
+					LOGE("Could not link program:\n%s", infoLog);
 					delete[] infoLog;
 				}
 			}
@@ -118,7 +118,7 @@ GLuint createProgram(const char* vertexSource, const char* fragmentSource) {
 
 void printGLString(const char* name, GLenum e) {
 	const GLubyte* s = glGetString(e);
-	LOGI("GL %s = %s\n", name, s);
+	LOGI("GL %s = %s", name, s);
 }
 
 bool initDisplay(AppState* appState) {
