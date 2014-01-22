@@ -47,6 +47,7 @@ struct AppState {
 	android_app* app;
 	EGLDisplay display;
 	EGLSurface surface;
+	EGLSurface offScreenSurface;
 	EGLContext context;
 	EGLContext renderContext;
 	int32_t width;
@@ -127,7 +128,7 @@ bool initDisplay(AppState* appState) {
 	eglInitialize(display, 0, 0);
 
 	const EGLint configAttribs[] = {
-		//		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
 		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
 		//		EGL_CONFORMANT, EGL_OPENGL_ES2_BIT,
 		//		EGL_BLUE_SIZE, 8,
@@ -145,13 +146,28 @@ bool initDisplay(AppState* appState) {
 	ANativeWindow_setBuffersGeometry(appState->app->window, 0, 0, format);
 
 	EGLSurface surface = eglCreateWindowSurface(display, config, appState->app->window, NULL);
+	if (surface == EGL_NO_SURFACE) {
+		LOGE("eglCreateWindowSurface failed with error 0x%04x", eglGetError());
+		return false;
+	}
 
 	EGLint contextAttribs[] = {
 		EGL_CONTEXT_CLIENT_VERSION, 2,
 		EGL_NONE
 	};
 
-	EGLContext context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
+	const EGLint offScreenConfigAttribs[] = {
+		EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+		EGL_NONE
+	};
+
+	EGLConfig offScreenConfig;
+	if (eglChooseConfig(display, offScreenConfigAttribs, &offScreenConfig, 1, &numConfigs) == EGL_FALSE) {
+		LOGE("eglChooseConfig failed with error 0x%04x", eglGetError());
+	}
+
+	EGLContext context = eglCreateContext(display, offScreenConfig, EGL_NO_CONTEXT, contextAttribs);
 	if (context == EGL_NO_CONTEXT) {
 		LOGE("eglCreateContext failed with error 0x%04x", eglGetError());
 		return false;
@@ -163,8 +179,20 @@ bool initDisplay(AppState* appState) {
 		return false;
 	}
 
-	if (eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, context) == EGL_FALSE) {
-		LOGE("eglMakeCurrent failed with error 0x%04x", eglGetError());
+	const EGLint offScreenSurfaceAttribs[] = {
+		EGL_WIDTH, 1,
+		EGL_HEIGHT, 1,
+		EGL_NONE
+	};
+
+	EGLSurface offScreenSurface = eglCreatePbufferSurface(display, offScreenConfig, offScreenSurfaceAttribs);
+	if (offScreenSurface == EGL_NO_SURFACE) {
+		LOGE("eglCreatePbufferSurface failed with error 0x%04x", eglGetError());
+		return false;
+	}
+
+	if (eglMakeCurrent(display, offScreenSurface, offScreenSurface, context) == EGL_FALSE) {
+		LOGE("Main Thread: eglMakeCurrent failed with error 0x%04x", eglGetError());
 		return false;
 	}
 
@@ -172,6 +200,7 @@ bool initDisplay(AppState* appState) {
 	appState->context = context;
 	appState->renderContext = renderContext;
 	appState->surface = surface;
+	appState->offScreenSurface = offScreenSurface;
 
 	printGLString("Version", GL_VERSION);
 	printGLString("Vendor", GL_VENDOR);
@@ -263,12 +292,16 @@ void termDisplay(AppState* appState) {
 		if (appState->surface != EGL_NO_SURFACE) {
 			eglDestroySurface(appState->display, appState->surface);
 		}
+		if (appState->offScreenSurface != EGL_NO_SURFACE) {
+			eglDestroySurface(appState->display, appState->offScreenSurface);
+		}
 		eglTerminate(appState->display);
 	}
 	appState->display = EGL_NO_DISPLAY;
 	appState->context = EGL_NO_CONTEXT;
 	appState->renderContext = EGL_NO_CONTEXT;
 	appState->surface = EGL_NO_SURFACE;
+	appState->offScreenSurface = EGL_NO_SURFACE;
 }
 
 int32_t onInputEvent(android_app* app, AInputEvent* event) {
