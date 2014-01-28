@@ -57,5 +57,8 @@
     <ClInclude Include="jni\android_native_app_glue.h">
       <Filter>jni</Filter>
     </ClInclude>
+    <ClInclude Include="jni\log.h">
+      <Filter>jni</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

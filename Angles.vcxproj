@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="jni\android_native_app_glue.h" />
+    <ClInclude Include="jni\log.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets"></ImportGroup>

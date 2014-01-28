@@ -1,13 +1,9 @@
-#include <android/log.h>
+#include "log.h"
 #include "android_native_app_glue.h"
 
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-
-#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, "Angles", __VA_ARGS__))
-#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "Angles", __VA_ARGS__))
-#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "Angles", __VA_ARGS__))
 
 const char vertexShader[] = 
 	"attribute vec4 position;\n"
