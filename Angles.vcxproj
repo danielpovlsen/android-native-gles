@@ -47,6 +47,7 @@
   <ItemGroup>
     <ClCompile Include="jni\android_native_app_glue.c" />
     <ClCompile Include="jni\main.cpp" />
+    <ClCompile Include="jni\shader_utils.c" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\drawable-hdpi\icon.png" />
@@ -57,6 +58,7 @@
   <ItemGroup>
     <ClInclude Include="jni\android_native_app_glue.h" />
     <ClInclude Include="jni\log.h" />
+    <ClInclude Include="jni\shader_utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets"></ImportGroup>
