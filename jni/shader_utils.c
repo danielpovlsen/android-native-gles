@@ -52,6 +52,11 @@ GLuint createProgram(const char* vertexSource, const char* fragmentSource) {
 	glAttachShader(program, fragmentShader);
 	glLinkProgram(program);
 
+	glDetachShader(program, vertexShader);
+	glDetachShader(program, fragmentShader);
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
 	GLint linkStatus;
 	glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
 	if (linkStatus == GL_TRUE) {
