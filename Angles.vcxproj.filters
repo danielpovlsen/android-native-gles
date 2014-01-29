@@ -7,6 +7,9 @@
     <ClCompile Include="jni\android_native_app_glue.c">
       <Filter>jni</Filter>
     </ClCompile>
+    <ClCompile Include="jni\shader_utils.c">
+      <Filter>jni</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="jni\Android.mk">
@@ -55,6 +58,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="jni\android_native_app_glue.h">
+      <Filter>jni</Filter>
+    </ClInclude>
+    <ClInclude Include="jni\shader_utils.h">
+      <Filter>jni</Filter>
+    </ClInclude>
+    <ClInclude Include="jni\log.h">
       <Filter>jni</Filter>
     </ClInclude>
   </ItemGroup>
