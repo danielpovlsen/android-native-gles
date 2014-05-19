@@ -17,7 +17,7 @@ aka Angles
 * Amazon Kindle Fire HDX 7" (3rd Gen) (~4.2.2)
 * Amazon Kindle Fire HDX 8.9" (3rd Gen) (~4.2.2)
 * Asus Eee Pad Transformer Prime TF201 (4.1.1)
-* Nvidia Shield (4.2.1)
+* Nvidia Shield (4.4.2)
 
 ## Prerequisites
 * For building, running and debugging using Visual Studio 2012
