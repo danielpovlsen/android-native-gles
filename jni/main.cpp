@@ -246,11 +246,14 @@ int32_t onInputEvent(android_app* app, AInputEvent* event) {
 
 		for (size_t i = 0; i < pointerCount; ++i) {
 			int32_t pointerId = AMotionEvent_getPointerId(event, i);
-			LOGI("Received motion event from pointer %zu: (%.2f, %.2f)", pointerId, AMotionEvent_getX(event, pointerId), AMotionEvent_getY(event, pointerId));
+			float x = AMotionEvent_getX(event, i);
+			float y = AMotionEvent_getY(event, i);
+
+			LOGI("Received motion event from pointer %d: (%.2f, %.2f)", pointerId, x, y);
 
 			AppState* appState = static_cast<AppState*>(app->userData);
-			appState->savedState.x = AMotionEvent_getX(event, 0);
-			appState->savedState.y = AMotionEvent_getY(event, 0);
+			appState->savedState.x = x;
+			appState->savedState.y = y;
 		}
 		return 1;
 	} else if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_KEY) {
